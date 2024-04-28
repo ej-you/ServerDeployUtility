@@ -1,3 +1,5 @@
+#!/bin/bash
+
 basedir=$(dirname "$(dirname "$(realpath "$0")")")
 
 red_text="\033[31m"
@@ -99,7 +101,8 @@ function handle_command_add() {
     echo "Adding new custom script..."
     read -p "Enter path to your script file: " -r path_to_new_custom_command
 
-    cp "$path_to_new_custom_command" "$basedir"/../custom_scripts/"$(basename "$path_to_new_custom_command")"
+    cp "$path_to_new_custom_command" "$basedir"/custom_scripts/"$(basename "$path_to_new_custom_command")"
+    chmod +x "$basedir"/custom_scripts/"$(basename "$path_to_new_custom_command")"
 
     # command exit status
     command_status=$?

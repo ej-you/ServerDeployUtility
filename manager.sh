@@ -1,3 +1,5 @@
+#!/bin/bash
+
 basedir=$(dirname "$(realpath "$0")")
 
 # load config's variables
@@ -40,6 +42,8 @@ function install() {
     echo "Start installation..."
     # make main script executable
     chmod +x "$basedir"/utility/deploy.sh
+    chmod +x "$basedir"/utility/default_script.sh
+    chmod +x "$basedir"/custom_scripts/test.sh
     # add alias "deploy" for script file "./utility/deploy.sh" into ~/.bashrc
     {
         echo -e "\n# >>> ServerDeployUtility from Ej_you >>>"
