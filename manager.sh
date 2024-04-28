@@ -16,12 +16,17 @@ function print_doc() {
     printf "\t%-20s %-15s\n" "uninstall" "Uninstall \"deploy utility\"."
     printf "\t%-20s %-15s\n" "status" "Show status of \"deploy utility\"."
     echo -e "\nDescription:\n"
+    printf "\t%-20s \n" "You can make this file executable and use it like \"./manager.sh\"."
+    printf "\t%-20s \n" "To use \"deploy utility\" you need to install it with the command \"./manager.sh install\"."
+    printf "\t%-20s \n" "To uninstall \"deploy utility\" use the command \"./manager.sh install\"."
+    printf "\t%-20s \n" "To see if the \"deploy utility\" is installed, use \"./manager.sh status\"."
     exit 0
 }
 
 function unexpected_arg_error() {
     echo -e "${red_text}ERROR: unexpected argument \"$1\"${default_text}"
     echo -e "${yellow_text}HINT: use \"bash ./manager.sh\" for read help manual"
+    exit 1
 }
 
 function install() {
