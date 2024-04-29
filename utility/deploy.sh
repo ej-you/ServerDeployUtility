@@ -38,7 +38,12 @@ function print_doc {
     printf "\t%-25s %-15s\n" "deploy add" "Start interactive mode for adding custom script."
 
     echo -e "\nDescription:\n"
-
+    printf "\t%-20s \n" "To use \"deploy utility\" you need to configured project dir. Use \"deploy set-config\"."
+    printf "\t%-20s \n" "Project dir is directory from which \"deploy utility\" will start all deploy scripts"
+    printf "\t%-20s \n" "If you want to add new custom script use \"deploy add\"."
+    printf "\t%-20s \n" "If actions from custom script must execute in the directory other than project dir, use \"cd\" instruction in your custom script"
+    printf "\t%-20s \n" "All important paths and variables you can see using \"deploy status\""
+    printf "\t%-20s \n" "To see if the \"deploy utility\" is installed, use \"./manager.sh status\"."
     exit 0
 }
 
