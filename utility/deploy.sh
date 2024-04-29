@@ -1,7 +1,12 @@
 #!/bin/bash
 
+# basedir for all project
 basedir=$(dirname "$(dirname "$(realpath "$0")")")
 
+# load config's variables
+source "$basedir/utility/config"
+
+# colored output formats
 red_text="\033[31m"
 yellow_text="\033[33m"
 green_text="\033[32m"
@@ -9,15 +14,17 @@ default_text="\033[0m"
 
 
 function print_doc_usage {
+    # print usage of utility
     printf "Usage:  deploy [ run [custom_script] [-v | --verbose] ] | [status] | [set-config] | [add] | [-h | --help]\n"
 }
 function print_doc {
+    # print all documentations of utility
     print_doc_usage
 
     echo -e "\nOptions and Arguments:\n"
     printf "\t%-25s %-15s\n" "run custom_script" "Run your custom script from \"custom_scripts\" subdir."
     printf "\t%-25s %-15s\n" "run" "default script using your configurated project dir."
-    printf "\t%-25s %-15s\n" "-v, --verbose" "Show detailed output while re-deploy"
+    printf "\t%-25s %-15s\n" "-v, --verbose" "Show detailed output for command \"run\""
     printf "\t%-25s %-15s\n" "status" "Show detailed status of \"deploy utility\""
     printf "\t%-25s %-15s\n" "add" "Add custom script using utility's interactive mode"
     printf "\t%-25s %-15s\n" "set-config" "Configure project dir for run default script using utility's interactive mode."
@@ -36,22 +43,83 @@ function print_doc {
 }
 
 function unexpected_arg_error() {
+    # handle given unexpected argument
     echo -e "${red_text}ERROR: unexpected argument \"$1\"${default_text}"
+    # print usage of utility
     print_doc_usage
     exit 1
 }
 function bad_command_error() {
-    echo -e "${red_text}ERROR: not used command${default_text}"
+    # handle invalid using flag without using command
+    echo -e "${red_text}ERROR: command was not specified${default_text}"
+    # print usage of utility
     print_doc_usage
     exit 1
 }
 
 
 function handle_command_run() {
-    echo "command_verbose=$command_verbose"
-    echo "script_to_run=$script_to_run"
+    # run script to re-deploy project
+    echo -e "Use detailed output: ${yellow_text}$command_verbose${default_text}"
 
-    exit 0
+    # run default script
+    if [ -z "$script_to_run" ]; then
+        echo -e "${yellow_text}Running default script...${default_text}\n"
+
+        # if project_dir is configured then move into it
+        if [ -n "$project_dir" ]; then
+            cd "$project_dir" || { echo -e "${red_text}ERROR: \"cd\" to configured project dir was failed${default_text}"; exit 1; }
+        fi
+
+        # if verbose flag was specified, use detailed output, else run script without output
+        if [ "$command_verbose" = "true" ]; then
+            "$basedir/utility/default_script.sh"
+        else
+            "$basedir/utility/default_script.sh" &> /dev/null
+        fi
+
+        # command exit status
+        command_status=$?
+        if [ "$command_status" != "0" ]; then
+            echo -e "[$(date +"%d/%b/%Y %H:%M:%S")] (Failed) run default script in project dir \"$project_dir\"" >> "$basedir"/logs/all-deploy.log
+            exit 1
+        else
+            echo -e "[$(date +"%d/%b/%Y %H:%M:%S")] (Successfully) run default script in project dir \"$project_dir\"" >> "$basedir"/logs/all-deploy.log
+            exit 0
+        fi
+
+    # run custom script
+    else
+        echo -e "${yellow_text}Running custom script \"$script_to_run\"...${default_text}\n"
+
+        # if project_dir is configured then move into it
+        if [ -n "$project_dir" ]; then
+            cd "$project_dir" || { echo -e "${red_text}ERROR: \"cd\" to configured project dir was failed${default_text}"; exit 1; }
+        fi
+
+        # check custom script file is existing
+        if [ ! -f "$basedir/custom_scripts/$script_to_run.sh" ]; then
+            echo -e "${red_text}ERROR: invalid custom script was specified${default_text}"
+            exit 1
+        fi
+
+        # if verbose flag was specified, use detailed output, else run script without output
+        if [ "$command_verbose" = "true" ]; then
+            "$basedir/custom_scripts/$script_to_run.sh"
+        else
+            "$basedir/custom_scripts/$script_to_run.sh" &> /dev/null
+        fi
+
+        # command exit status
+        command_status=$?
+        if [ "$command_status" != "0" ]; then
+            echo -e "[$(date +"%d/%b/%Y %H:%M:%S")] (Failed) run custom script \"$script_to_run\" in project dir \"$project_dir\"" >> "$basedir"/logs/all-deploy.log
+            exit 1
+        else
+            echo -e "[$(date +"%d/%b/%Y %H:%M:%S")] (Successfully) run custom script \"$script_to_run\" in project dir \"$project_dir\"" >> "$basedir"/logs/all-deploy.log
+            exit 0
+        fi
+    fi
 }
 
 function handle_command_status() {
@@ -82,7 +150,12 @@ function handle_command_set_config() {
     echo "Set project dir for default deploy script..."
     read -p "Enter full path to your project: " -r full_path_to_project
 
-    echo "project_dir=\"$full_path_to_project\"" > "$basedir"/config
+	  if [ ! -d "$full_path_to_project" ]; then
+	      echo -e "${red_text}ERROR: invalid path to project dir!${default_text}"
+	      exit 1
+	  fi
+
+    echo "project_dir=\"$full_path_to_project\"" > "$basedir"/utility/config
 
     # command exit status
     command_status=$?
@@ -100,6 +173,11 @@ function handle_command_set_config() {
 function handle_command_add() {
     echo "Adding new custom script..."
     read -p "Enter path to your script file: " -r path_to_new_custom_command
+
+    if [ ! -f "$path_to_new_custom_command" ]; then
+	      echo -e "${red_text}ERROR: invalid path to file!${default_text}"
+	      exit 1
+	  fi
 
     cp "$path_to_new_custom_command" "$basedir"/custom_scripts/"$(basename "$path_to_new_custom_command")"
     chmod +x "$basedir"/custom_scripts/"$(basename "$path_to_new_custom_command")"
