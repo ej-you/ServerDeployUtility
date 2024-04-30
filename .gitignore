@@ -15,3 +15,6 @@ venv.bak/
 
 # project dir variable in file
 /utility/config
+
+# custom scripts
+/custom_scripts/*
