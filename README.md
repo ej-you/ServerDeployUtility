@@ -25,7 +25,7 @@ bash ./manager.sh status
 ```
 
 ### Usage:
-> **deploy** **[ run** _[custom_script]_ _[-v | --verbose]_ **]** | **[status]** | **[set-config]** | **[add]** | **[-h | --help]**
+> **deploy** **[ run** _[custom_script]_ _[-v | --verbose]_ **]** | **[status]** | **[set-config]** | **[add]** | **[logs]** | **[-h | --help]**
 
 
 ### Description:
@@ -52,6 +52,7 @@ Project dir is directory from which `deploy utility` will start all deploy scrip
 | status              | Show detailed status of `deploy utility`                                      |
 | add                 | Add custom script using utility's interactive mode                            |
 | set-config          | Configure project dir for run default script using utility's interactive mode |
+| logs                | Show all "deploy utility" logs                                                |
 | -h, --help          | Show help message                                                             |
 
 ### Examples:

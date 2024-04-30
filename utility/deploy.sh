@@ -18,7 +18,7 @@ default_text="\033[0m"
 
 function print_doc_usage {
     # print usage of utility
-    printf "Usage:  deploy [ run [custom_script] [-v | --verbose] ] | [status] | [logs] | [set-config] | [add] | [-h | --help]\n"
+    printf "Usage:  deploy [ run [custom_script] [-v | --verbose] ] | [status] | [set-config] | [add] | [logs] | [-h | --help]\n"
 }
 function print_doc {
     # print all documentations of utility
@@ -31,6 +31,7 @@ function print_doc {
     printf "\t%-25s %-15s\n" "status" "Show detailed status of \"deploy utility\""
     printf "\t%-25s %-15s\n" "add" "Add custom script using utility's interactive mode"
     printf "\t%-25s %-15s\n" "set-config" "Configure project dir for run default script using utility's interactive mode."
+    printf "\t%-25s %-15s\n" "logs" "Show all \"deploy utility\" logs"
     printf "\t%-25s %-15s\n" "-h, --help" "Show this message"
 
     echo -e "\nExamples:\n"
