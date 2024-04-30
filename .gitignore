@@ -12,3 +12,6 @@ venv.bak/
 
 # PyCharm
 /.idea/
+
+# project dir variable in file
+/utility/config

@@ -2,9 +2,6 @@
 
 basedir=$(dirname "$(realpath "$0")")
 
-# load config's variables
-source "$basedir/utility/config"
-
 
 red_text="\033[31m"
 yellow_text="\033[33m"
@@ -50,6 +47,10 @@ function install() {
         echo "alias deploy=\"$basedir/utility/deploy.sh\""
         echo "# <<< ServerDeployUtility <<<"
     } >> ~/.bashrc
+
+    if [ ! -f "$basedir/utility/config" ]; then
+        echo 'project_dir=""' > "$basedir/utility/config"
+    fi
 
     # command exit status
     command_status=$?

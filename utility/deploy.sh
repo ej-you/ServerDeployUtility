@@ -3,6 +3,9 @@
 # basedir for all project
 basedir=$(dirname "$(dirname "$(realpath "$0")")")
 
+if [ ! -f "$basedir/utility/config" ]; then
+    echo 'project_dir=""' > "$basedir/utility/config"
+fi
 # load config's variables
 source "$basedir/utility/config"
 
@@ -15,7 +18,7 @@ default_text="\033[0m"
 
 function print_doc_usage {
     # print usage of utility
-    printf "Usage:  deploy [ run [custom_script] [-v | --verbose] ] | [status] | [set-config] | [add] | [-h | --help]\n"
+    printf "Usage:  deploy [ run [custom_script] [-v | --verbose] ] | [status] | [logs] | [set-config] | [add] | [-h | --help]\n"
 }
 function print_doc {
     # print all documentations of utility
@@ -43,7 +46,6 @@ function print_doc {
     printf "\t%-20s \n" "If you want to add new custom script use \"deploy add\"."
     printf "\t%-20s \n" "If actions from custom script must execute in the directory other than project dir, use \"cd\" instruction in your custom script"
     printf "\t%-20s \n" "All important paths and variables you can see using \"deploy status\""
-    printf "\t%-20s \n" "To see if the \"deploy utility\" is installed, use \"./manager.sh status\"."
     exit 0
 }
 
@@ -127,26 +129,45 @@ function handle_command_run() {
     fi
 }
 
+function handle_command_logs() {
+    # print all logs of "deploy utility"
+    cat "$basedir"/logs/all-deploy.log
+    exit 0
+}
+
 function handle_command_status() {
-    printf "Project dir for default deploy script:\n\t"
+
+    echo -e "${yellow_text}Project dir for deploy scripts:${default_text}"
+    printf "\t"
     cat "$basedir"/utility/config
 
+    echo -e "${yellow_text}Custom scripts list:${default_text}"
     scripts_list=( $(ls -A "$basedir"/custom_scripts) )
-    printf "Custom scripts list:\n"
     for arr_index in ${!scripts_list[*]}
     do
         printf "\t%s\n" "${scripts_list["$arr_index"]}"
     done
     echo
 
-    printf "Dir contains \"deploy utility\" runner:\n\t"
+    echo -e "${yellow_text}Dir contains \"deploy utility\" runner:${default_text}"
+    printf "\t"
     echo "$basedir"/utility
 
-    printf "Dir contains custom scripts:\n\t"
-    echo -e "$basedir/custom_scripts\n"
+    echo -e "${yellow_text}Dir contains custom scripts:${default_text}"
+    printf "\t"
+    echo -e "$basedir/custom_scripts"
 
-    printf "Full path to log file:\n\t"
+    echo -e "\n${yellow_text}Default script file:${default_text}"
+    printf "\t"
+    echo "$basedir"/utility/default_script.sh
+
+    echo -e "${yellow_text}Log file:${default_text}"
+    printf "\t"
     echo "$basedir"/logs/all-deploy.log
+
+    echo -e "${yellow_text}\"Deploy utility\" manager:${default_text}"
+    printf "\t"
+    echo "$basedir"/manager.sh
 
     exit 0
 }
@@ -213,6 +234,7 @@ while [ -n "$1" ]
 do
     case "$1" in
         status) handle_command_status;;
+        logs) handle_command_logs;;
         set-config) handle_command_set_config;;
         add) handle_command_add;;
         -h | --help) print_doc;;
