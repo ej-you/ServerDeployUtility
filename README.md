@@ -4,7 +4,7 @@
 
 1. Clone this repo:
 ```shell
-git clone https://github.com/Danil-114195722/ServerDeployUtility.git
+git clone https://github.com/ej-you/ServerDeployUtility.git
 ```
 
 2. Move into utility's directory:
